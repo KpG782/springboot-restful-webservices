@@ -29,9 +29,9 @@ COPY --from=build /app/target/*.jar app.jar
 # Expose port
 EXPOSE 8080
 
-# Health check - waits 60s before first check
+# Health check - waits 60s before first check, uses /health endpoint
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:8080/ || exit 1
+  CMD curl -f http://localhost:8080/health || exit 1
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
