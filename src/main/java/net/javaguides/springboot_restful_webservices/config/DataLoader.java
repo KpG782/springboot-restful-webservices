@@ -1,10 +1,11 @@
 package net.javaguides.springboot_restful_webservices.config;
 
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
 import lombok.AllArgsConstructor;
 import net.javaguides.springboot_restful_webservices.entity.User;
 import net.javaguides.springboot_restful_webservices.repository.UserRepository;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor

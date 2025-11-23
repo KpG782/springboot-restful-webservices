@@ -13,10 +13,17 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private static final int MAX_USERS = 50; // Maximum allowed users
+    
     private UserRepository userRepository;
 
     @Override
     public User createUser(User user) {
+        // Check if user limit is reached
+        long currentUserCount = userRepository.count();
+        if (currentUserCount >= MAX_USERS) {
+            throw new RuntimeException("User limit reached! Maximum " + MAX_USERS + " users allowed. Please contact administrator.");
+        }
         return userRepository.save(user);
     }
 
