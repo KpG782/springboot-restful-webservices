@@ -1,10 +1,13 @@
 package net.javaguides.springboot_restful_webservices.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import net.javaguides.springboot_restful_webservices.entity.User;
 import net.javaguides.springboot_restful_webservices.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +21,7 @@ public class UserController {
 
     // CREATE User
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user){
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user){
         User savedUser = userService.createUser(user);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
@@ -40,7 +43,7 @@ public class UserController {
     // UPDATE User
     @PutMapping("{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") Long userId,
-                                           @RequestBody User user){
+                                           @Valid @RequestBody User user){
         user.setId(userId);
         User updatedUser = userService.updateUser(user);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
@@ -51,5 +54,23 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable("id") Long userId){
         userService.deleteUser(userId);
         return new ResponseEntity<>("User successfully deleted!", HttpStatus.OK);
+    }
+
+    // Exception handler for validation errors
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        StringBuilder errors = new StringBuilder("Validation failed: ");
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.append(fieldName).append(": ").append(errorMessage).append("; ");
+        });
+        return new ResponseEntity<>(errors.toString(), HttpStatus.BAD_REQUEST);
+    }
+
+    // Exception handler for runtime errors
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
